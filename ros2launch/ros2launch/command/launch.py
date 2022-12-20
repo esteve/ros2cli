@@ -103,8 +103,12 @@ class LaunchCommand(CommandExtension):
                   'to by matching the executable name.')
         )
         parser.add_argument(
-            '--node-filter',
-            help='Regex pattern for filtering which nodes to launch from a launch file.'
+            '--node-filter-include',
+            help='Regex pattern for filtering which nodes to include from a launch file.'
+        )
+        parser.add_argument(
+            '--node-filter-exclude',
+            help='Regex pattern for filtering which nodes to exclude from a launch file.'
         )
         arg = parser.add_argument(
             'package_name',
