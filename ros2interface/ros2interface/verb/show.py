@@ -25,7 +25,9 @@ from rosidl_adapter.parser import \
     MessageSpecification, \
     parse_message_string, \
     SERVICE_REQUEST_RESPONSE_SEPARATOR
+from rosidl_parser.parser import parse_idl_string
 from rosidl_runtime_py import get_interface_path
+from pathlib import Path
 
 
 class InterfaceTextLine:
@@ -40,6 +42,8 @@ class InterfaceTextLine:
         if line_text in (SERVICE_REQUEST_RESPONSE_SEPARATOR, ACTION_REQUEST_RESPONSE_SEPARATOR):
             msg_spec = None
         else:
+            print('LINE TEXT')
+            print(line_text)
             msg_spec = parse_message_string(
                 pkg_name=pkg_name,
                 msg_name=msg_name,
@@ -111,13 +115,17 @@ def _get_interface_lines(interface_identifier: str) -> typing.Iterable[Interface
     pkg_name, _, msg_name = parts
 
     file_path = get_interface_path(interface_identifier)
-    with open(file_path) as file_handler:
-        for line in file_handler:
-            yield InterfaceTextLine(
-                pkg_name=pkg_name,
-                msg_name=msg_name,
-                line_text=line.rstrip(),
-            )
+    if Path(file_path).suffix == '.idl':
+        with open(file_path) as file_handler:
+            return parse_idl_string(file_handler.read())
+    else:
+        with open(file_path) as file_handler:
+            for line in file_handler:
+                yield InterfaceTextLine(
+                    pkg_name=pkg_name,
+                    msg_name=msg_name,
+                    line_text=line.rstrip(),
+                )
 
 
 def _print_interface_line(
